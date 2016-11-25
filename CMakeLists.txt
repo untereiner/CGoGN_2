@@ -143,13 +143,17 @@ subdirlist(CGOGN_CONFIGURED_MODULES ${CGOGN_SOURCE_DIR}/cgogn)
 add_subdirectory(${CGOGN_THIRDPARTY_DIR})
 
 foreach(subdir ${CGOGN_CONFIGURED_MODULES})
-
     set(enabled_by_default ON)
   	option( MODULE_${subdir} "Enable CGOGN component ${subdir}" ${enabled_by_default})
   	# TODO use command CMakeDependentOption
 	if(MODULE_${subdir})
-		add_subdirectory(cgogn/${subdir})
+		list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cgogn/${subdir}")
+	endif()
+endforeach()
 
+foreach(subdir ${CGOGN_CONFIGURED_MODULES})
+	if(MODULE_${subdir})
+		add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cgogn/${subdir})
 		if(CGOGN_BUILD_TESTS)
 			if(EXISTS cgogn/${subdir}/tests/)
 				add_subdirectory(cgogn/${subdir}/tests)
