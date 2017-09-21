@@ -41,6 +41,7 @@
 #include <cgogn/geometry/algos/picking.h>
 #include <cgogn/rendering/frame_manipulator.h>
 
+#include <cgogn/modeling/algos/tetrahedralization.h>
 
 #define DEFAULT_MESH_PATH CGOGN_STR(CGOGN_TEST_MESHES_PATH)
 
@@ -242,6 +243,42 @@ void Viewer::keyPressEvent(QKeyEvent *ev)
 				topo_drawer_rend_->set_clipping_plane(plane_clipping1_);
 			}
 			break;
+		case Qt::Key_0:
+		{
+			drawer_->new_list();
+
+			drawer_->begin(GL_POINT);
+
+			Map3::CellMarker<Map3::Face::ORBIT> marker(map_);
+			std::queue<Map3::Vertex> vertices;
+			vertices.push(Map3::Vertex(cgogn::Dart(0)));
+
+			while(!vertices.empty())
+			{
+				Map3::Vertex v = vertices.back();
+				vertices.pop();
+				drawer_->vertex3fv(vertex_position_[v]);
+				map_.foreach_incident_face(v, [&](Map3::Face f)
+				{
+					cgogn::Dart dit = f.dart;
+					cgogn::Dart s = map_.phi1(dit);
+
+					if(!marker.is_marked(f))
+					{
+						map_.cut_face(s, map_.phi_1(dit));
+						marker.mark(f);
+						marker.mark(Map3::Face(s));
+						vertices.push(Map3::Vertex(map_.phi1(s)));
+					}
+				});
+			}
+			drawer_->end();
+			drawer_->end_list();
+			topo_drawer_->update<Vec3>(map_,vertex_position_);
+			volume_drawer_->update_face<Vec3>(map_,vertex_position_);
+			volume_drawer_->update_edge<Vec3>(map_,vertex_position_);
+		}
+		break;
 		default:
 			break;
 	}

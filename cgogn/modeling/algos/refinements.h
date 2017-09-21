@@ -72,6 +72,20 @@ void triangule(MAP& map, typename MAP::template VertexAttribute<VEC3>& position)
 	}, cache);
 }
 
+template<typename MAP, typename VEC3>
+void triangule2(MAP& map, typename MAP::template VertexAttribute<VEC3>& position)
+{
+	using Face = typename MAP::Face;
+	typename MAP::CellCache cache(map);
+	cache.template build<Face>();
+	map.parallel_foreach_cell([&map](Face f)
+	{
+		const Dart d = f.dart;
+		const Dart d1 = map.phi1(map.phi1(d));
+		map.cut_face(d, d1);
+	}, cache);
+}
+
 #if defined(CGOGN_USE_EXTERNAL_TEMPLATES) && (!defined(CGOGN_MODELING_ALGOS_REFINEMENTS_CPP_))
 extern template CGOGN_MODELING_API CMap2::Vertex triangule<CMap2>(CMap2&, CMap2::Face);
 extern template CGOGN_MODELING_API CMap3::Vertex triangule<CMap3>(CMap3&, CMap3::Face);

@@ -35,7 +35,7 @@ add_executable(picking_viewer picking_viewer.cpp)
 target_link_libraries(picking_viewer ${cgogn_core_LIBRARIES} ${cgogn_io_LIBRARIES} ${cgogn_rendering_LIBRARIES} ${QOGLViewer_LIBRARIES})
 
 add_executable(viewer_topo3 viewer_topo3.cpp)
-target_link_libraries(viewer_topo3 ${cgogn_core_LIBRARIES} ${cgogn_io_LIBRARIES} ${cgogn_rendering_LIBRARIES} ${QOGLViewer_LIBRARIES})
+target_link_libraries(viewer_topo3 ${cgogn_core_LIBRARIES} ${cgogn_io_LIBRARIES} ${cgogn_rendering_LIBRARIES} ${cgogn_modeling_LIBRARIES} ${QOGLViewer_LIBRARIES})
 
 add_executable(mt_viewer mt_viewer.cpp)
 target_link_libraries(mt_viewer ${cgogn_core_LIBRARIES} ${cgogn_io_LIBRARIES} ${cgogn_rendering_LIBRARIES} ${QOGLViewer_LIBRARIES})

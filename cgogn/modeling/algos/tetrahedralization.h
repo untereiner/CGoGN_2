@@ -55,6 +55,8 @@ CGOGN_MODELING_API Dart edge_bisection(CMap3& map, CMap3::Edge e);
 
 CGOGN_MODELING_API Dart swap_gen_32(CMap3& map, CMap3::Edge e);
 
+CGOGN_MODELING_API void hexa_to_tetra(CMap3& map);
+
 //template <typename VEC3>
 //std::vector<Dart> swap_gen_32_optimized(CMap3& map, CMap3::Edge e)
 //{

@@ -32,6 +32,8 @@
 #include <cgogn/io/map_import.h>
 #include <cgogn/io/map_export.h>
 
+#include <cgogn/modeling/algos/refinements.h>
+
 #include <cgogn/geometry/algos/bounding_box.h>
 
 #include <cgogn/rendering/drawer.h>
@@ -153,7 +155,10 @@ void Viewer::keyPressEvent(QKeyEvent *ev)
 			topo_drawing_ = !topo_drawing_;
 			break;
 		case Qt::Key_E:
-			cgogn::io::export_surface(map_, cgogn::io::ExportOptions::create().filename("/tmp/pipo.vtp").position_attribute(Map2::Vertex::ORBIT, "position"));
+			cgogn::io::export_surface(map_, cgogn::io::ExportOptions::create().filename("/tmp/pipo.obj").position_attribute(Map2::Vertex::ORBIT, "position"));
+			break;
+		case Qt::Key_Q:
+			cgogn::modeling::triangule2<Map2, Vec3>(map_, vertex_position_);
 			break;
 		default:
 			break;
