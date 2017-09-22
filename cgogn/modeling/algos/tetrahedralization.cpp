@@ -359,49 +359,52 @@ CGOGN_MODELING_API Dart swap_gen_32(CMap3& map, CMap3::Edge e)
 
 CGOGN_MODELING_API void hexa_to_tetra(CMap3& map)
 {
+	CMap3::CellMarker<CMap3::Vertex::ORBIT> v1marker(map);
 	CMap3::CellMarker<CMap3::Face::ORBIT> marker(map);
 	std::queue<CMap3::Vertex> vertices;
 	vertices.push(CMap3::Vertex(Dart(0)));
 
 	while(!vertices.empty())
 	{
-		CMap3::Vertex v = vertices.back();		
+		CMap3::Vertex v = vertices.front();
 		vertices.pop();
-
+		v1marker.mark(v);
 		map.foreach_incident_face(v, [&](CMap3::Face f)
 		{
 			Dart dit = f.dart;
 			Dart s = map.phi1(dit);		
+
+			if(!v1marker.is_marked(CMap3::Vertex(map.phi1(s))))
+				vertices.push(CMap3::Vertex(map.phi1(s)));
 
 			if(!marker.is_marked(f))
 			{
 				map.cut_face(s, map.phi_1(dit));
 				marker.mark(f);
 				marker.mark(CMap3::Face(s));
-				vertices.push(CMap3::Vertex(map.phi1(s)));
 			}
 		});
 	}
 
-//	CMap3::CellMarker<CMap3::Vertex2::ORBIT> vmarker(map);
+	CMap3::CellMarker<CMap3::Vertex2::ORBIT> vmarker(map);
 
-//	map.foreach_cell([&](CMap3::Vertex2 v)
-//	{
-//		if(!vmarker.is_marked(v) && map.degree(v) == 3)
-//		{
-//			std::vector<Dart> path;
-//			Dart dit = v.dart;
-//			do
-//			{
-//				path.push_back(map.phi1(dit));
-//				vmarker.mark(CMap3::Vertex2(map.phi1(dit)));
-//				dit = map.phi2(map.phi_1(dit));
-//			}
-//			while(dit != v.dart);
+	map.foreach_cell([&](CMap3::Vertex2 v)
+	{
+		if(!vmarker.is_marked(v) && map.degree(v) == 3)
+		{
+			std::vector<Dart> path;
+			Dart dit = v.dart;
+			do
+			{
+				path.push_back(map.phi1(dit));
+				vmarker.mark(CMap3::Vertex2(map.phi1(dit)));
+				dit = map.phi2(map.phi_1(dit));
+			}
+			while(dit != v.dart);
 
-//			map.cut_volume(path);
-//		}
-//	});
+			map.cut_volume(path);
+		}
+	});
 }
 
 //template CGOGN_MODELING_API std::vector<Dart> swap_gen_32_optimized<Eigen::Vector3f>(CMap3&, CMap3::Edge);
