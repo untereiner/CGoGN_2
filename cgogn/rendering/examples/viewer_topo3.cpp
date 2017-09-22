@@ -41,6 +41,7 @@
 #include <cgogn/geometry/algos/picking.h>
 #include <cgogn/rendering/frame_manipulator.h>
 
+#include <cgogn/messy/algos/quality_metric.h>
 #include <cgogn/modeling/algos/tetrahedralization.h>
 
 #define DEFAULT_MESH_PATH CGOGN_STR(CGOGN_TEST_MESHES_PATH)
@@ -277,6 +278,34 @@ void Viewer::keyPressEvent(QKeyEvent *ev)
 			topo_drawer_->update<Vec3>(map_,vertex_position_);
 			volume_drawer_->update_face<Vec3>(map_,vertex_position_);
 			volume_drawer_->update_edge<Vec3>(map_,vertex_position_);
+		}
+		break;
+		case Qt::Key_1: {
+
+			cgogn::modeling::hexa_to_tetra(map_);
+
+			map_.foreach_cell([&](Map3::Volume w)
+			{
+				if(!cgogn::modeling::is_tetrahedron(map_, w))
+					std::cout << "SHIT" << std::endl;
+			});
+
+			topo_drawer_->update<Vec3>(map_,vertex_position_);
+			volume_drawer_->update_face<Vec3>(map_,vertex_position_);
+			volume_drawer_->update_edge<Vec3>(map_,vertex_position_);
+		}
+		break;
+		case Qt::Key_2: {
+
+			map_.foreach_cell([&](Map3::Volume w)
+			{
+				float64 f = cgogn::tet_jacobian<Vec3, Map3>(map_, w, vertex_position_);
+				if(f < 0.)
+				{
+					std::cout << f << std::endl;
+				}
+			});
+
 		}
 		break;
 		default:
