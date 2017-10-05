@@ -397,7 +397,7 @@ CGOGN_MODELING_API void hexa_to_tetra(CMap3& map)
 			Dart s = map.phi1(dit);		
 
 			if(!v1marker.is_marked(CMap3::Vertex(map.phi1(s))))
-				vertices.push(CMap3::Vertex(map.phi1(s)));
+				vertices.push(CMap3::Vertex(map.phi1(map.phi1(map.phi2(map.phi1(map.phi1(s)))))));
 
 			if(!marker.is_marked(f))
 			{
@@ -408,27 +408,27 @@ CGOGN_MODELING_API void hexa_to_tetra(CMap3& map)
 		});
 	}
 
-//	CMap3::CellMarker<CMap3::Vertex2::ORBIT> vmarker(map);
+	CMap3::CellMarker<CMap3::Vertex2::ORBIT> vmarker(map);
 
-//	map.foreach_cell([&](CMap3::Vertex2 v)
-//	{
-//		if(!vmarker.is_marked(v) && map.degree(v) == 3)
-//		{
-//			std::vector<Dart> path;
-//			Dart dit = v.dart;
-//			do
-//			{
-//				path.push_back(map.phi1(dit));
-//				dit = map.phi2(map.phi_1(dit));
-//			}
-//			while(dit != v.dart);
+	map.foreach_cell([&](CMap3::Vertex2 v)
+	{
+		if(!vmarker.is_marked(v) && map.degree(v) == 3)
+		{
+			std::vector<Dart> path;
+			Dart dit = v.dart;
+			do
+			{
+				path.push_back(map.phi1(dit));
+				dit = map.phi2(map.phi_1(dit));
+			}
+			while(dit != v.dart);
 
-//			map.cut_volume(path);
+			map.cut_volume(path);
 
-//			for(auto& d : path)
-//				vmarker.mark(CMap3::Vertex2(d));
-//		}
-//	});
+			for(auto& d : path)
+				vmarker.mark(CMap3::Vertex2(d));
+		}
+	});
 }
 
 //template CGOGN_MODELING_API std::vector<Dart> swap_gen_32_optimized<Eigen::Vector3f>(CMap3&, CMap3::Edge);
