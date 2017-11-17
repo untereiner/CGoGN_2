@@ -72,7 +72,8 @@
 namespace cgogn
 {
 
-
+//https://github.com/jaredhoberock/future
+//https://github.com/jaredhoberock/then
 template<class T, class Function>
 std::future<typename std::result_of<Function(std::future<T>&)>::type>
   then(std::future<T>& fut, std::launch policy, Function&& f)
