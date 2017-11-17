@@ -72,6 +72,28 @@
 namespace cgogn
 {
 
+
+template<class T, class Function>
+std::future<typename std::result_of<Function(std::future<T>&)>::type>
+  then(std::future<T>& fut, std::launch policy, Function&& f)
+{
+  return std::async(policy, [](std::future<T>&& fut, Function&& f)
+  {
+	fut.wait();
+	return std::forward<Function>(f)(fut);
+  },
+  std::move(fut),
+  std::forward<Function>(f)
+  );
+}
+
+template<class T, class Function>
+std::future<typename std::result_of<Function(std::future<T>&)>::type>
+  then(std::future<T>& fut, Function&& f)
+{
+  return then(fut, std::launch::async | std::launch::deferred, std::forward<Function>(f));
+}
+
 class CGOGN_CORE_API ThreadPool final
 {
 public:
@@ -87,6 +109,12 @@ public:
 
 	template <class F, class... Args>
 	std::future<void> enqueue(const F& f, Args&&... args);
+
+	///
+	///
+	/// \todo replace this by std::future::then when c++20 will be out
+	template <class F, class... Args>
+	void foreach_thread_do(const F& f, Args&&... args);
 
 	~ThreadPool();
 
@@ -172,6 +200,15 @@ std::future<void> ThreadPool::enqueue(const F& f, Args&&... args)
 	// Notify a thread that there is new work to perform
 	condition_.notify_one();
 	return res;
+}
+
+template <class F, class... Args>
+void ThreadPool::foreach_thread_do(const F& f, Args&&... args)
+{
+	std::for_each(workers_.begin(), workers_.end(), [&, f](std::thread &t;) -> void
+	{
+		f(std::forward<Args>(args)...);
+	});
 }
 
 /**

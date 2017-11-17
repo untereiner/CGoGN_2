@@ -25,8 +25,10 @@
 #include <cgogn/core/utils/thread_pool.h>
 
 namespace cgogn
-
 {
+
+
+
 
 ThreadPool::~ThreadPool()
 {
