@@ -13,7 +13,7 @@ install:
     
 branches:
   only:
-  - develop
+  - mr_tls
 
 script:
   - mkdir build
