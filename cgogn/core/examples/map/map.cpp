@@ -6,6 +6,8 @@
 #include <cgogn/core/basic/dart_marker.h>
 #include <cgogn/core/basic/cell_marker.h>
 
+#include <cgogn/core/cmap/for_each.h>
+
 using namespace cgogn;
 using namespace cgogn::numerics;
 
@@ -85,6 +87,8 @@ int test1(MAP& map)
 
 	DartMarker<MAP> dm(map);
 	CellMarker<MAP, MAP::Vertex::ORBIT> cm(map);
+
+	cgogn::m_for_each(map, [] (Dart d) { cgogn_log_info("my foreach") << d; });
 
 	dm.mark(d1);
 

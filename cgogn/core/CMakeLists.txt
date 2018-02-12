@@ -26,6 +26,7 @@ set(HEADER_CMAP
 	cmap/cmap2_quad.h
 	cmap/cmap3_tetra.h
 	cmap/cmap3_hexa.h
+	cmap/for_each.h
 )
 
 set(HEADER_CONTAINER
