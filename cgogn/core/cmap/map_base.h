@@ -796,7 +796,7 @@ protected:
 	 * Traversals
 	 *******************************************************************************/
 
-protected:
+public:
 
 	/*!
 	 * \Brief Methods to iterate over darts.

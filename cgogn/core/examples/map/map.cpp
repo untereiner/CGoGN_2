@@ -88,7 +88,143 @@ int test1(MAP& map)
 	DartMarker<MAP> dm(map);
 	CellMarker<MAP, MAP::Vertex::ORBIT> cm(map);
 
-	cgogn::m_for_each(map, [] (Dart d) { cgogn_log_info("my foreach") << d; });
+	{
+
+		cgogn_log_info("my_foreach") << "---------------";
+		cgogn_log_info("my_foreach") << "Darts :";
+		cgogn::mfor_each(map, [] (Dart d)
+		{
+			cgogn_log_info("my_foreach") << d;
+		});
+		cgogn_log_info("my_foreach")<< "End Darts";
+
+		cgogn_log_info("my_foreach") << "Vertices :";
+		cgogn::mfor_each(map, [&] (Vertex v)
+		{
+			cgogn_log_info("my foreach") << v;
+		});
+		cgogn_log_info("my_foreach") << "End Vertices";
+
+		cgogn_log_info("my_foreach") << "Edges :";
+		cgogn::mfor_each(map, [&] (typename MAP::Edge e)
+		{
+			cgogn_log_info("my foreach") << e;
+		});
+		cgogn_log_info("my_foreach") << "End Edge";
+
+	}
+
+	dm.mark(d1);
+
+	cgogn_log_info("example_map") << "Darts :";
+	map.foreach_dart([] (Dart d) { cgogn_log_info("example_map") << d; });
+	cgogn_log_info("example_map")<< "End Darts";
+
+	cgogn_log_info("example_map") << "Vertices :";
+	map.foreach_cell([&] (Vertex v)
+	{
+		cgogn_log_info("example_map") << v;
+		ah[v] = 2.0f;
+	});
+	cgogn_log_info("example_map") << "End Vertices";
+
+	// the method foreach_adjacent_vertex_through_edge is not well defined for a MAP1
+//	map.foreach_adjacent_vertex_through_edge(d1, [&] (typename MAP::Vertex v)
+//	{
+//		ah[v] = 4.0f;
+//	});
+
+	// get ChunkArrayContainer -> get ChunkArray -> fill
+//	typename MAP::template ChunkArrayContainer<uint32>& container = map.get_attribute_container(MAP::Vertex);
+//	typename MAP::template ChunkArray<float32>* att = container.template get_attribute<float32>("floats");
+//	for (uint32 i = 0; i < 10; ++i)
+//		container.template insert_lines<1>();
+	for (auto& v : ah)
+		v = 3.0f;
+
+	// access with index
+	cgogn_log_info("example_map") << ah[0];
+
+	fonc_non_const<MAP>(ah);
+	fonc_const<MAP>(ah);
+
+	//	// traverse container with for range
+	//	for (float32 f:ah)
+	//		cgogn_log_info("example_map") << f;
+
+	return 0;
+}
+
+template <typename MAP>
+int test2(MAP& map)
+{
+	using Vertex = typename MAP::Vertex;
+	using Face = typename MAP::Face;
+
+	typename MAP::Builder build(map);
+
+	Dart d1 =build.add_prism_topo_fp(3);
+	build.close_map();
+
+
+	// add an attribute on vertex of map with
+	typename MAP::template VertexAttribute<float32> ah = map.template add_attribute<float32, Vertex>("floats");
+
+	typename MAP::template FaceAttribute<float32> ahf = map.template add_attribute<float32, Face>("floats");
+
+	// get attribute and change type (dangerous!)
+	typename MAP::template VertexAttribute<int32> ahf2 = map.template get_attribute_force_type<int32,float32, Vertex::ORBIT>("floats");
+
+	map.remove_attribute(ahf);
+	cgogn_log_info("example_map") << "ahf valid : " << std::boolalpha << ahf.is_valid();
+
+//	std::vector<uint32>* uib = cgogn::uint_buffers()->buffer();
+//	uib->push_back(3);
+//	cgogn::uint_buffers()->release_buffer(uib);
+
+
+
+
+
+	// get cell buffer typed
+//	std::vector<typename MAP::Vertex>* vertb = cgogn::dart_buffers()->cell_buffer<typename MAP::Vertex>();
+
+////	std::vector<Dart>* vertdb = cgogn::dart_buffers()->buffer();
+////	std::vector<typename MAP::Vertex>* vert_b = reinterpret_cast< std::vector<typename MAP::Vertex>* >(vertdb);
+
+//	vertb->push_back(typename MAP::Vertex(d1));
+//	vertb->push_back(typename MAP::Vertex(d1));
+
+//	cgogn::dart_buffers()->release_cell_buffer(vertb);
+
+	DartMarker<MAP> dm(map);
+//	CellMarker<MAP, MAP::Vertex::ORBIT> cm(map);
+
+	{
+
+		cgogn_log_info("my_foreach") << "---------------";
+		cgogn_log_info("my_foreach") << "Darts :";
+		cgogn::mfor_each(map, [] (Dart d)
+		{
+			cgogn_log_info("my_foreach") << d;
+		});
+		cgogn_log_info("my_foreach")<< "End Darts";
+
+		cgogn_log_info("my_foreach") << "Vertices :";
+		cgogn::mfor_each(map, [&] (Vertex v)
+		{
+			cgogn_log_info("my foreach") << v;
+		});
+		cgogn_log_info("my_foreach") << "End Vertices";
+
+		cgogn_log_info("my_foreach") << "Edges :";
+		cgogn::mfor_each(map, [&] (typename MAP::Edge e)
+		{
+			cgogn_log_info("my foreach") << e;
+		});
+		cgogn_log_info("my_foreach") << "End Edge";
+
+	}
 
 	dm.mark(d1);
 
@@ -135,10 +271,14 @@ int main()
 {
 	CMap1 map1;
 	CMap2 map2;
-//	CMap3 map3;
+	CMap3 map3;
 //	test1(map1);
+	cgogn_log_info("example_map") << "**********************************";
+	cgogn_log_info("example_map") << "CMap2";
 	test1(map2);
-//	test1(map3);
+	cgogn_log_info("example_map") << "**********************************";
+	cgogn_log_info("example_map") << "CMap3";
+	test2(map3);
 
 	return 0;
 }

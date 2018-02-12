@@ -3,10 +3,11 @@
 
 #include <cgogn/core/basic/dart.h>
 #include <cgogn/core/utils/type_traits.h>
+#include <cgogn/core/cmap/map_base.h>
 
 namespace cgogn {
 
-struct for_each_traversal_tag{};
+struct for_each_traversal_tag {};
 
 struct for_each_dart_traversal_tag : public for_each_traversal_tag {};
 
@@ -18,19 +19,13 @@ struct traversal
 {
 	typedef _Category traversal_category;
 	//ADD the cell type pointed
+	//ADD Traversal Strategy
 };
 
 template <typename _Trav>
-inline typename traversal_traits<_Trav>::traversal_category
-traversal_category(const _Trav&)
+struct traversal_traits
 {
-	return typename traversal_traits<_Trav>::
-}
-
-template <typename _Trav>
-struct traversal_traits<_Trav>
-{
-	typedef for_each_traversal_tag traversal_category;
+	typedef for_each_cell_traversal_tag traversal_category;
 };
 
 template <>
@@ -39,6 +34,12 @@ struct traversal_traits<Dart>
 	typedef for_each_dart_traversal_tag traversal_category;
 };
 
+//template <typename FUNC>
+//inline auto traversal_category()
+//{
+//	return typename traversal_traits<func_parameter_type<FUNC>>::traversal_category;
+//}
+
 /**
  * \brief apply a function on each dart of the map (including boundary darts)
  * if the function returns a boolean, the traversal stops when it first returns false
@@ -46,7 +47,7 @@ struct traversal_traits<Dart>
  * @param f a callable
  */
 template <typename MAP, typename FUNC>
-inline void for_each_helper(MAP& cmap, const FUNC& f, for_each_dart_traversal_tag) const
+inline void for_each_helper(MAP& cmap, const FUNC& f, for_each_dart_traversal_tag)
 {
 	static_assert(is_func_parameter_same<FUNC, Dart>::value, "foreach_dart: given function should take a Dart as parameter");
 
@@ -58,11 +59,18 @@ inline void for_each_helper(MAP& cmap, const FUNC& f, for_each_dart_traversal_ta
 }
 
 template <typename MAP, typename FUNC>
-inline void m_for_each(MAP& cmap, const FUNC& f) const
+inline void for_each_helper(MAP& cmap, const FUNC& f, for_each_cell_traversal_tag)
 {
-	static_assert(is_func_parameter_same<FUNC, Dart>::value, "foreach_dart: given function should take a Dart as parameter");
+	using CellType = func_parameter_type<FUNC>;
 
-	for_each_helper(cmap, f, traversal_traits<internal::func_parameter_type<FUNC>>::traversal_category());
+	cmap.template foreach_cell<TraversalStrategy::FORCE_DART_MARKING>(f, [] (CellType) { return true; });
+}
+
+template <typename MAP, typename FUNC>
+inline void mfor_each(MAP& cmap, const FUNC& f)
+{
+	typename traversal_traits<func_parameter_type<FUNC>>::traversal_category category;
+	for_each_helper(cmap, f, category);
 }
 
 }
