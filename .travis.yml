@@ -10,6 +10,7 @@ matrix:
 
 install:
   - bash .travis_install.sh
+  - cmake --version
     
 branches:
   only:
