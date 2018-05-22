@@ -11,6 +11,11 @@ set(HEADER_BASIC
 	basic/cell_marker.h
 )
 
+set(HEADER_TRAVERSAL
+	traversal/global_traversal.h
+	traversal/foreach_dart.h
+)
+
 set(HEADER_CMAP
 	cmap/map_traits.h
 	cmap/map_base_data.h
@@ -19,14 +24,14 @@ set(HEADER_CMAP
 	cmap/cmap1.h
 	cmap/cmap2.h
 	cmap/cmap2_builder.h
-	cmap/cmap3.h
-	cmap/cmap3_builder.h
-	cmap/attribute.h
-	cmap/cmap2_tri.h
-	cmap/cmap2_quad.h
-	cmap/cmap3_tetra.h
-	cmap/cmap3_hexa.h
-	cmap/for_each.h
+#	cmap/cmap3.h
+#	cmap/cmap3_builder.h
+#	cmap/attribute.h
+#	cmap/cmap2_tri.h
+#	cmap/cmap2_quad.h
+#	cmap/cmap3_tetra.h
+#	cmap/cmap3_hexa.h
+#	cmap/for_each.h
 )
 
 set(HEADER_CONTAINER
@@ -64,19 +69,23 @@ set(HEADER_UTILS
 	utils/parallel_foreach_element.h
 )
 
-set(HEADER_FILES dll.h ${HEADER_BASIC} ${HEADER_CMAP} ${HEADER_CONTAINER} ${HEADER_GRAPH} ${HEADER_UTILS})
+set(HEADER_FILES dll.h ${HEADER_BASIC} ${HEADER_TRAVERSAL} ${HEADER_CMAP} ${HEADER_CONTAINER} ${HEADER_GRAPH} ${HEADER_UTILS})
 
+set(SOURCE_TRAVERSAL
+	traversal/global_traversal.cpp
+	traversal/foreach_dart.cpp
+)
 
 set(SOURCE_CMAP
 	cmap/map_base_data.cpp
 	cmap/cmap0.cpp
 	cmap/cmap1.cpp
 	cmap/cmap2.cpp
-	cmap/cmap3.cpp
-	cmap/cmap2_tri.cpp
-	cmap/cmap2_quad.cpp
-	cmap/cmap3_tetra.cpp
-	cmap/cmap3_hexa.cpp
+#	cmap/cmap3.cpp
+#	cmap/cmap2_tri.cpp
+#	cmap/cmap2_quad.cpp
+#	cmap/cmap3_tetra.cpp
+#	cmap/cmap3_hexa.cpp
 )
 set(SOURCE_CONTAINER
 	container/chunk_array_container.cpp
@@ -104,7 +113,7 @@ set(SOURCE_UTILS
 	utils/timer.cpp
 )
 
-set(SOURCE_FILES ${SOURCE_CMAP} ${SOURCE_CONTAINER} ${SOURCE_GRAPH} ${SOURCE_UTILS})
+set(SOURCE_FILES ${SOURCE_TRAVERSAL} ${SOURCE_CMAP} ${SOURCE_CONTAINER} ${SOURCE_GRAPH} ${SOURCE_UTILS})
 
 add_library(${PROJECT_NAME} SHARED ${HEADER_FILES} ${SOURCE_FILES})
 

@@ -89,7 +89,7 @@ public:
 	inline void mark_orbit(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(is_valid(), "Invalid DartMarker");
-		map_.foreach_dart_of_orbit(c, [&] (Dart d)
+		foreach_dart_of_orbit(map_, c, [&] (Dart d)
 		{
 			mark_attribute_->set_true(d.index);
 		});
@@ -99,7 +99,7 @@ public:
 	inline void unmark_orbit(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(is_valid(), "Invalid DartMarker");
-		map_.foreach_dart_of_orbit(c, [&] (Dart d)
+		foreach_dart_of_orbit(map_, c, [&] (Dart d)
 		{
 			mark_attribute_->set_false(d.index);
 		});
@@ -202,14 +202,14 @@ public:
 	inline void mark_orbit(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(this->is_valid(), "Invalid DartMarkerStore");
-		this->map_.foreach_dart_of_orbit(c, [this] (Dart d) { this->mark(d); });
+		foreach_dart_of_orbit(this->map_, c, [this] (Dart d) { this->mark(d); });
 	}
 
 	template <Orbit ORBIT>
 	inline void unmark_orbit(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(this->is_valid(), "Invalid DartMarkerStore");
-		this->map_.foreach_dart_of_orbit(c, [this] (Dart d) { this->unmark(d); });
+		foreach_dart_of_orbit(this->map_, c, [this] (Dart d) { this->unmark(d); });
 	}
 
 	inline void unmark_all()

@@ -166,17 +166,6 @@ public:
 		this->remove_topology_element(v.dart);
 	}
 
-	/*******************************************************************************
-	 * Orbits traversal
-	 *******************************************************************************/
-
-	template <Orbit ORBIT, typename FUNC>
-	inline void foreach_dart_of_orbit(Cell<ORBIT> c, const FUNC& f) const
-	{
-		static_assert(ORBIT == Orbit::DART, "Orbit not supported in a CMap0");
-		f(c.dart);
-	}
-
 protected:
 
 	/**
@@ -212,6 +201,17 @@ struct CMap0Type
 };
 
 using CMap0 = CMap0_T<CMap0Type>;
+
+
+template <Orbit ORBIT, typename FUNC>
+inline void foreach_dart_of_orbit_helper(CMap0& map, Cell<ORBIT> c, const FUNC& f)
+{
+	unused_parameters(map);
+	static_assert(ORBIT == Orbit::DART, "Orbit not supported in a CMap0");
+	f(c.dart);
+}
+
+
 
 #if defined(CGOGN_USE_EXTERNAL_TEMPLATES) && (!defined(CGOGN_CORE_MAP_MAP0_CPP_))
 extern template class CGOGN_CORE_API CMap0_T<CMap0Type>;

@@ -24,7 +24,7 @@ template <typename _Trav>
 inline typename traversal_traits<_Trav>::traversal_category
 traversal_category(const _Trav&)
 {
-	return typename traversal_traits<_Trav>::
+	return typename traversal_traits<_Trav>::traversal_category;
 }
 
 template <typename _Trav>

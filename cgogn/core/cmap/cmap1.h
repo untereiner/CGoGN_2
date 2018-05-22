@@ -29,6 +29,47 @@
 namespace cgogn
 {
 
+class CMap1;
+
+namespace internal {
+
+	template <typename FUNC>
+	inline void foreach_dart_of_PHI1(CMap1& map, Dart d, const FUNC& f)
+	{
+		Dart it = d;
+		do
+		{
+			if (!internal::void_to_true_binder(f, it))
+				break;
+			it = map.phi1(it);
+		} while (it != d);
+	}
+
+}
+
+
+template <Orbit ORBIT, typename FUNC>
+inline void foreach_dart_of_orbit_helper(CMap1& map, Cell<ORBIT> c, const FUNC& f)
+{
+	static_assert(is_func_parameter_same<FUNC, Dart>::value, "Wrong function parameter type");
+	static_assert(ORBIT == Orbit::DART || ORBIT == Orbit::PHI1, "Orbit not supported in a CMap1");
+
+	switch (ORBIT)
+	{
+		case Orbit::DART: f(c.dart); break;
+		case Orbit::PHI1: internal::foreach_dart_of_PHI1(map, c.dart, f); break;
+		case Orbit::PHI2:
+		case Orbit::PHI21:
+		case Orbit::PHI1_PHI2:
+		case Orbit::PHI1_PHI3:
+		case Orbit::PHI2_PHI3:
+		case Orbit::PHI21_PHI31:
+		case Orbit::PHI1_PHI2_PHI3:
+		default: cgogn_assert_not_reached("Orbit not supported in a CMap1"); break;
+	}
+}
+
+
 template <typename MAP_TYPE>
 class CMap1_T : public CMap0_T<MAP_TYPE>
 {
@@ -473,47 +514,6 @@ public:
 public:
 
 	/*******************************************************************************
-	* Orbits traversal                                                             *
-	*******************************************************************************/
-
-	template <Orbit ORBIT, typename FUNC>
-	inline void foreach_dart_of_orbit(Cell<ORBIT> c, const FUNC& f) const
-	{
-		static_assert(is_func_parameter_same<FUNC, Dart>::value, "Wrong function parameter type");
-		static_assert(ORBIT == Orbit::DART || ORBIT == Orbit::PHI1, "Orbit not supported in a CMap1");
-
-		switch (ORBIT)
-		{
-			case Orbit::DART: f(c.dart); break;
-			case Orbit::PHI1: foreach_dart_of_PHI1(c.dart, f); break;
-			case Orbit::PHI2:
-			case Orbit::PHI21:
-			case Orbit::PHI1_PHI2:
-			case Orbit::PHI1_PHI3:
-			case Orbit::PHI2_PHI3:
-			case Orbit::PHI21_PHI31:
-			case Orbit::PHI1_PHI2_PHI3:
-			default: cgogn_assert_not_reached("Orbit not supported in a CMap1"); break;
-		}
-	}
-
-protected:
-
-	template <typename FUNC>
-	inline void foreach_dart_of_PHI1(Dart d, const FUNC& f) const
-	{
-		Dart it = d;
-		do
-		{
-			if (!internal::void_to_true_binder(f, it))
-				break;
-			it = phi1(it);
-		} while (it != d);
-	}
-
-public:
-
-	/*******************************************************************************
 	 * Incidence traversal
 	 *******************************************************************************/
 
@@ -568,6 +568,9 @@ struct CMap1Type
 };
 
 using CMap1 = CMap1_T<CMap1Type>;
+
+
+
 
 #if defined(CGOGN_USE_EXTERNAL_TEMPLATES) && (!defined(CGOGN_CORE_MAP_MAP1_CPP_))
 extern template class CGOGN_CORE_API CMap1_T<CMap1Type>;
