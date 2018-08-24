@@ -44,8 +44,10 @@ namespace type_traits
  * Warning : when dealing with a member function, the pointer to the current object is ignored.
  * see https://functionalcpp.wordpress.com/2013/08/05/function-traits/
  */
-template<class Fn>
-struct function_traits;
+
+// specialization for lambda functions
+template <typename F>
+struct function_traits : public function_traits<decltype(&F::operator())> {};
 
 // General case
 template <typename ReturnType, typename... ArgTypes>
@@ -69,40 +71,44 @@ template <typename ReturnType, typename... ArgTypes>
 struct function_traits<ReturnType(*)(ArgTypes...)> : public function_traits<ReturnType(ArgTypes...)> {};
 
 // specialization for function references
-template <typename ReturnType, typename... Args>
-struct function_traits<ReturnType(&)(Args...)> : public function_traits<ReturnType(Args...)> {};
+template <typename ReturnType, typename... ArgTypes>
+struct function_traits<ReturnType(&)(ArgTypes...)> : public function_traits<ReturnType(ArgTypes...)> {};
 
 // specialization for member function pointers
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...)>: public function_traits<ReturnType(ClassType&, Args...)> {};
+template <typename ClassType, typename ReturnType, typename... ArgTypes>
+struct function_traits<ReturnType(ClassType::*)(ArgTypes...)>: public function_traits<ReturnType(ArgTypes...)> {};
 
 // specialization for const member function pointers
-template <typename ClassType, typename ReturnType, typename... Args>
-struct function_traits<ReturnType(ClassType::*)(Args...) const> : public function_traits<ReturnType(ClassType&, Args...)>{};
+template <typename ClassType, typename ReturnType, typename... ArgTypes>
+struct function_traits<ReturnType(ClassType::*)(ArgTypes...) const> : public function_traits<ReturnType(ArgTypes...)>{};
 
 // specialization for member object pointer
 template <typename ClassType, typename ReturnType>
 struct function_traits<ReturnType(ClassType::*)> : public function_traits<ReturnType(ClassType&)>{};
 
+//template<class Fn>
+//struct function_traits;
+
+
 // functor
-template<class F>
-struct function_traits
-{
-	private:
-		using call_type = function_traits<decltype(&F::operator())>;
+//template<class F>
+//struct function_traits
+//{
+//	private:
+//		using call_type = function_traits<decltype(&F::operator())>;
 
-	public:
-		using result_type = typename call_type::result_type;
+//	public:
+//		using result_type = typename call_type::result_type;
 
-		static const std::size_t arity = call_type::arity - 1;
+//		static const std::size_t arity = call_type::arity - 1;
 
-		template <size_t i>
-		struct arg
-		{
-			static_assert(i < arity, "error: invalid parameter index.");
-			using type = typename call_type::template arg<i+1>::type;
-		};
-};
+//		template <size_t i>
+//		struct arg
+//		{
+//			static_assert(i < arity, "error: invalid parameter index.");
+//			using type = typename call_type::template arg<i+1>::type;
+//		};
+//};
 
 // The two extra specializations will also strip any reference qualifiers to prevent wierd errors.
 template<class F>
@@ -408,17 +414,17 @@ inline void for_each(Container&& c, FUNC&& func)
 namespace internal
 {
 
-template<typename FUNC, typename... Args>
-inline typename std::enable_if<is_func_return_same<FUNC, void>::value, bool>::type void_to_true_binder(const FUNC& func, Args... args)
+template<typename FUNC, typename... ArgTypes>
+inline typename std::enable_if<is_func_return_same<FUNC, void>::value, bool>::type void_to_true_binder(const FUNC& func, ArgTypes... args)
 {
-	func(std::forward<Args>(args)...);
+	func(std::forward<ArgTypes>(args)...);
 	return true;
 }
 
-template<typename FUNC, typename... Args>
-inline typename std::enable_if<is_func_return_same<FUNC, bool>::value, bool>::type void_to_true_binder(const FUNC& func, Args... args)
+template<typename FUNC, typename... ArgTypes>
+inline typename std::enable_if<is_func_return_same<FUNC, bool>::value, bool>::type void_to_true_binder(const FUNC& func, ArgTypes... args)
 {
-	return func(std::forward<Args>(args)...);
+	return func(std::forward<ArgTypes>(args)...);
 }
 
 #define RETURN_TYPE_IF(COND,TYPE) typename std::enable_if<COND,TYPE>::type
