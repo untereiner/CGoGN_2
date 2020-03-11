@@ -60,7 +60,7 @@ void loop(MAP& map, VERTEX_ATTR& position)
 	map.foreach_cell([&] (Edge e) { map.cut_edge(e); }, initial_cache);
 
 	// compute position of new edge points
-	map.foreach_cell([&] (Edge e)
+	map.parallel_foreach_cell([&] (Edge e)
 	{
 		Vertex v1(e.dart);
 		Vertex v2(map.template phi<12>(e.dart));
@@ -73,7 +73,7 @@ void loop(MAP& map, VERTEX_ATTR& position)
 	initial_cache);
 
 	// compute new position of old vertices
-	map.foreach_cell([&] (Vertex v)
+	map.parallel_foreach_cell([&] (Vertex v)
 	{
 		VEC3 sum_edge;// Sum_E
 		sum_edge.setZero();
