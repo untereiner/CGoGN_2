@@ -105,7 +105,7 @@ void loop(MAP& map, VERTEX_ATTR& position)
 	initial_cache);
 
 	// add edges inside faces
-	map.foreach_cell([&] (Face f)
+	map.parallel_foreach_cell([&] (Face f)
 	{
 		Dart d0 = map.phi1(f.dart);
 		Dart d1 = map.template phi<11>(d0);

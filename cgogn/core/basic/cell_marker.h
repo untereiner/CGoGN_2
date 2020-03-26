@@ -46,7 +46,7 @@ public:
 protected:
 
 	MAP& map_;
-	ChunkArrayBool* mark_attribute_;
+	typename Map::template ChunkArray<uint32>* mark_attribute_;
 
 public:
 
@@ -71,13 +71,13 @@ public:
 	inline void mark(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(is_valid(), "Invalid CellMarker");
-		mark_attribute_->set_true(map_.embedding(c));
+		mark_attribute_->set_value(map_.embedding(c), 1);
 	}
 
 	inline void unmark(Cell<ORBIT> c)
 	{
 		cgogn_message_assert(is_valid(), "Invalid CellMarker");
-		mark_attribute_->set_false(map_.embedding(c));
+		mark_attribute_->set_value(map_.embedding(c), 0);
 	}
 
 	inline bool is_marked(Cell<ORBIT> c) const
@@ -126,7 +126,7 @@ public:
 	inline void unmark_all()
 	{
 		cgogn_message_assert(this->is_valid(), "Invalid CellMarker");
-		this->mark_attribute_->all_false();
+		this->mark_attribute_->set_all_values(0);
 	}
 
 };

@@ -89,7 +89,8 @@ protected:
 	/**
 	* vector of pointers to Marker ChunkArray
 	*/
-	std::vector<ChunkArrayBool*> table_marker_arrays_;
+	//std::vector<ChunkArrayBool*> table_marker_arrays_;
+	std::vector<ChunkArray<uint32>*> table_marker_arrays_;
 
 	/**
 	 * @brief ChunkArray of refs
@@ -269,7 +270,8 @@ public:
 		return table_arrays_;
 	}
 
-	inline const std::vector<ChunkArrayBool*>& marker_arrays()
+	//inline const std::vector<ChunkArrayBool*>& marker_arrays()
+	inline const std::vector<ChunkArray<uint32>*>& marker_arrays()
 	{
 		return table_marker_arrays_;
 	}
@@ -412,9 +414,11 @@ public:
 	 * @brief add a Marker attribute
 	 * @return pointer on created ChunkArray
 	 */
-	ChunkArrayBool* add_marker_attribute()
+	//ChunkArrayBool* add_marker_attribute()
+	ChunkArray<uint32>* add_marker_attribute()
 	{
-		ChunkArrayBool* mca = new ChunkArrayBool();
+		//ChunkArrayBool* mca = new ChunkArrayBool();
+		ChunkArray<uint32>* mca = new ChunkArray<uint32>();
 		mca->set_nb_chunks(refs_.nb_chunks());
 		table_marker_arrays_.push_back(mca);
 		return mca;
@@ -834,7 +838,7 @@ public:
 		cgogn_message_assert(used(index), "init_markers_of_line only with allocated lines");
 
 		for (auto ptr : table_marker_arrays_)
-			ptr->set_false(index);
+			ptr->set_value(index, 0);
 	}
 
 	/**

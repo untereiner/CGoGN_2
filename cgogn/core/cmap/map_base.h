@@ -117,7 +117,7 @@ public:
 		// 2nd step : updating internal data structures.
 		{
 			std::lock_guard<std::mutex> lock(this->mark_attributes_topology_mutex_);
-			for (ChunkArrayBool* cab : this->topology_.marker_arrays())
+			for (ChunkArray<uint32>* cab : this->topology_.marker_arrays())
 				cab->clear();
 		}
 
@@ -130,7 +130,7 @@ public:
 			}
 
 			std::lock_guard<std::mutex> lock(this->mark_attributes_mutex_[i]);
-			for (ChunkArrayBool* cab : this->attributes_[i].marker_arrays())
+			for (ChunkArray<uint32>* cab : this->attributes_[i].marker_arrays())
 				cab->clear();
 		}
 	}
@@ -357,7 +357,7 @@ protected:
 	* @return a mark attribute on the topology container
 	*/
 	template <Orbit ORBIT>
-	inline ChunkArrayBool* mark_attribute()
+	inline ChunkArray<uint32>* mark_attribute()
 	{
 		static_assert(ORBIT < NB_ORBITS, "Unknown orbit parameter");
 
@@ -366,7 +366,7 @@ protected:
 
 		if (!this->mark_attributes_[ORBIT][thread].empty())
 		{
-			ChunkArrayBool* ca = this->mark_attributes_[ORBIT][thread].back();
+			ChunkArray<uint32>* ca = this->mark_attributes_[ORBIT][thread].back();
 			this->mark_attributes_[ORBIT][thread].pop_back();
 			return ca;
 		}
@@ -375,7 +375,7 @@ protected:
 			std::lock_guard<std::mutex> lock(this->mark_attributes_mutex_[ORBIT]);
 			if (!this->template is_embedded<ORBIT>())
 				create_embedding<ORBIT>();
-			ChunkArrayBool* ca = this->attributes_[ORBIT].add_marker_attribute();
+			ChunkArray<uint32>* ca = this->attributes_[ORBIT].add_marker_attribute();
 			return ca;
 		}
 	}
@@ -385,7 +385,7 @@ protected:
 	* @param the mark attribute to release
 	*/
 	template <Orbit ORBIT>
-	inline void release_mark_attribute(ChunkArrayBool* ca)
+	inline void release_mark_attribute(ChunkArray<uint32>* ca)
 	{
 		static_assert(ORBIT < NB_ORBITS, "Unknown orbit parameter");
 		cgogn_message_assert(this->template is_embedded<ORBIT>(), "Invalid parameter: orbit not embedded");

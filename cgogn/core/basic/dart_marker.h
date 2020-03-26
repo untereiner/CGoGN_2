@@ -45,7 +45,7 @@ public:
 protected:
 
 	Map& map_;
-	ChunkArrayBool* mark_attribute_;
+	typename Map::template ChunkArray<uint32>* mark_attribute_;
 
 public:
 
@@ -70,7 +70,7 @@ public:
 	inline void mark(Dart d)
 	{
 		cgogn_message_assert(is_valid(), "Invalid DartMarker");
-		mark_attribute_->set_true(d.index);
+		mark_attribute_->set_value(d.index, 1);
 	}
 
 	inline void unmark(Dart d)
@@ -91,7 +91,7 @@ public:
 		cgogn_message_assert(is_valid(), "Invalid DartMarker");
 		map_.foreach_dart_of_orbit(c, [&] (Dart d)
 		{
-			mark_attribute_->set_true(d.index);
+			mark_attribute_->set_value(d.index, 1);
 		});
 	}
 
@@ -101,7 +101,7 @@ public:
 		cgogn_message_assert(is_valid(), "Invalid DartMarker");
 		map_.foreach_dart_of_orbit(c, [&] (Dart d)
 		{
-			mark_attribute_->set_false(d.index);
+			mark_attribute_->set_value(d.index, 0);
 		});
 	}
 
@@ -139,7 +139,7 @@ public:
 	inline void unmark_all()
 	{
 		cgogn_message_assert(this->is_valid(), "Invalid DartMarker");
-		this->mark_attribute_->all_false();
+		this->mark_attribute_->set_all_values(0);
 	}
 };
 
@@ -216,7 +216,7 @@ public:
 	{
 		cgogn_message_assert(this->is_valid(), "Invalid DartMarkerStore");
 		for (Dart d : *marked_darts_)
-			this->mark_attribute_->set_false_byte(d.index);
+			this->mark_attribute_->set_value(d.index, 0);
 		marked_darts_->clear();
 	}
 

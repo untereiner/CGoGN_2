@@ -342,6 +342,24 @@ protected:
 		return add_hexa_topo_fp();
 	}
 
+    inline Dart add_pyramid_topo_fp(std::size_t size)
+    {
+        cgogn_message_assert(size == 4u, "Can create only hexa");
+        if (size != 4)
+        {
+            cgogn_log_warning("add_pyramide_topo_fp") << "Attempt to create a volume which is not a hexahedron in CMap3Hexa";
+            return Dart();
+        }
+        return add_hexa_topo_fp();
+    }
+
+    inline Dart add_stamp_volume_topo_fp()
+    {
+        cgogn_assert("Can create only hexa");
+        cgogn_log_warning("add_stamp_volume_topo_fp") << "Attempt to create a volume which is not a hexahedron in CMap3Hexa";
+        return add_hexa_topo_fp();
+    }
+
 	/**
 	 * @brief sew two volumes along a face
 	 * The darts given in the Volume parameters must be part of Face2 that have
@@ -1334,7 +1352,7 @@ public:
 	inline void foreach_incident_volume(Face f, const FUNC& func) const
 	{
 		static_assert(is_func_parameter_same<FUNC, Volume>::value, "Wrong function cell parameter type");
-		if (!this->is_boundary(f.dart) && !internal::void_to_true_binder(func(Volume(f.dart))))
+        if (!this->is_boundary(f.dart) && !internal::void_to_true_binder(func, Volume(f.dart)))
 			return;
 		const Dart d3 = phi3(f.dart);
 		if (!this->is_boundary(d3))
@@ -1631,12 +1649,12 @@ public:
 		});
 	}
 
-	inline std::pair<Vertex, Vertex> vertices(Edge e)
+    inline std::pair<Vertex, Vertex> vertices(Edge e) const
 	{
 		return std::pair<Vertex, Vertex>(Vertex(e.dart), Vertex(this->phi1(e.dart)));
 	}
 
-	inline std::pair<Vertex2, Vertex2> vertices(Edge2 e)
+    inline std::pair<Vertex2, Vertex2> vertices(Edge2 e) const
 	{
 		return std::pair<Vertex2, Vertex2>(Vertex2(e.dart), Vertex2(this->phi1(e.dart)));
 	}

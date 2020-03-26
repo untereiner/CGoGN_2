@@ -90,14 +90,16 @@ protected:
 	std::array<ChunkArray<uint32>*, NB_ORBITS> embeddings_;
 
 	// boundary marker shortcut
-	ChunkArrayBool* boundary_marker_;
+	ChunkArray<uint32>* boundary_marker_;
 
 	// vector of available mark attributes per thread on the topology container
-	std::vector<std::vector<ChunkArrayBool*>> mark_attributes_topology_;
+	//std::vector<std::vector<ChunkArrayBool*>> mark_attributes_topology_;
+	std::vector<std::vector<ChunkArray<uint32>*>> mark_attributes_topology_;
 	std::mutex mark_attributes_topology_mutex_;
 
 	// vector of available mark attributes per orbit per thread on attributes containers
-	std::array<std::vector<std::vector<ChunkArrayBool*>>, NB_ORBITS> mark_attributes_;
+	//std::array<std::vector<std::vector<ChunkArrayBool*>>, NB_ORBITS> mark_attributes_;
+	std::array<std::vector<std::vector<ChunkArray<uint32>*>>, NB_ORBITS> mark_attributes_;
 	std::array<std::mutex, NB_ORBITS> mark_attributes_mutex_;
 
 	// vector of Map instances
@@ -159,20 +161,23 @@ protected:
 	* \brief get a mark attribute on the topology container (from pool or created)
 	* @return a mark attribute on the topology container
 	*/
-	inline ChunkArrayBool* topology_mark_attribute()
+	//inline ChunkArrayBool* topology_mark_attribute()
+	inline ChunkArray<uint32>* topology_mark_attribute()
 	{
 		const std::size_t thread = cgogn::current_thread_marker_index();
 		cgogn_assert(thread < mark_attributes_topology_.size());
 		if (!this->mark_attributes_topology_[thread].empty())
 		{
-			ChunkArrayBool* ca = this->mark_attributes_topology_[thread].back();
+//			ChunkArrayBool* ca = this->mark_attributes_topology_[thread].back();
+			ChunkArray<uint32>* ca = this->mark_attributes_topology_[thread].back();
 			this->mark_attributes_topology_[thread].pop_back();
 			return ca;
 		}
 		else
 		{
 			std::lock_guard<std::mutex> lock(this->mark_attributes_topology_mutex_);
-			ChunkArrayBool* ca = this->topology_.add_marker_attribute();
+			//ChunkArrayBool* ca = this->topology_.add_marker_attribute();
+			ChunkArray<uint32>* ca = this->topology_.add_marker_attribute();
 			return ca;
 		}
 	}
@@ -181,7 +186,8 @@ protected:
 	* \brief release a mark attribute on the topology container
 	* @param the mark attribute to release
 	*/
-	inline void release_topology_mark_attribute(ChunkArrayBool* ca)
+	//inline void release_topology_mark_attribute(ChunkArrayBool* ca)
+	inline void release_topology_mark_attribute(ChunkArray<uint32>* ca)
 	{
 		const std::size_t thread = cgogn::current_thread_marker_index();
 		cgogn_assert(thread < mark_attributes_topology_.size());

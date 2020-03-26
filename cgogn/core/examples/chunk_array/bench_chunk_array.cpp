@@ -130,7 +130,7 @@ int test3()
 	cgogn_log_info("bench_chunk_array") << "= TEST 3 = random bool cleaning" ;
 
 	ChunkArrayContainer<BLK_SZ, uint8> container;
-	ChunkArrayBool<BLK_SZ>* att1 = container.add_marker_attribute();
+	ChunkArray<BLK_SZ, uint32>* att1 = container.add_marker_attribute();
 
 	for (uint32 i = 0; i < NB_LINES; ++i)
 		container.insert_lines<1>();
@@ -144,8 +144,8 @@ int test3()
 	{
 		for (uint32 i = 0; i < NB_LINES/2; ++i)
 		{
-			att1->set_false(i);
-			att1->set_false(NB_LINES-1-i);
+			att1->set_value(i, 0);
+			att1->set_value(NB_LINES-1-i, 0);
 		}
 	}
 
@@ -158,7 +158,7 @@ int test4()
 	cgogn_log_info("bench_chunk_array") << "= TEST 4 = random bool cleaning with set_false_byte" ;
 
 	ChunkArrayContainer<BLK_SZ, uint8> container;
-	ChunkArrayBool<BLK_SZ>* att1 = container.add_marker_attribute();
+	ChunkArray<BLK_SZ, uint32>* att1 = container.add_marker_attribute();
 
 	for (uint32 i = 0; i < NB_LINES; ++i)
 		container.insert_lines<1>();
@@ -172,8 +172,8 @@ int test4()
 	{
 		for (uint32 i = 0; i < NB_LINES/2; ++i)
 		{
-			att1->set_false_byte(i);
-			att1->set_false_byte(NB_LINES-1-i);
+			att1->set_value(i, 0);
+			att1->set_value(NB_LINES-1-i, 0);
 		}
 	}
 
